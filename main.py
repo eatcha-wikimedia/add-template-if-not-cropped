@@ -52,16 +52,17 @@ def out(text, newline=True, date=False, color=None):
 add_template(cat):
     gen = pagegenerators.CategorizedPageGenerator(pywikibot.Category(SITE,cat))
     end = findEndOfTemplate(old_text, "[Ss]pecimen")
+    summary = "Adding {{Do not crop}} template, requested by Pigsonthewing @ commons.wikimedia.org/w/index.php?title=Commons:Bots/Work_requests&oldid=414102776"
     for file in gen:
         file_name = file.title()
         if file_name.startswith("File:"):
             page = pywikibot.Page(SITE, file_name)
             old_text = page.get()
             new_text = (old_text[:end]+  "\n{{Do not crop}}\n" + old_text[end:])
-            
-            
-         
-    
+            try:
+                commit(old_text, new_text, page, summary,)
+            except:
+                continue
 
 def main():
     global SITE
