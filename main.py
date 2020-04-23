@@ -6,7 +6,7 @@ def commit(old_text, new_text, page, summary):
     """Show diff and submit text to page."""
     out("\nAbout to make changes at : '%s'" % page.title())
     pywikibot.showDiff(old_text, new_text)
-    #page.put(new_text, summary=summary, watchArticle=True, minorEdit=False)
+    page.put(new_text, summary=summary, watchArticle=True, minorEdit=False)
 
 def findEndOfTemplate(text, template):
     """Find end of any template, by Zitrax"""
@@ -60,11 +60,11 @@ def add_template(cat):
             page = pywikibot.Page(SITE, file_name)
             old_rev = page.oldest_revision
             if 'crop' in (old_rev.comment).lower():
-                out('already cropped', color="white)
+                out('already cropped', color="white")
                 continue
             old_text = page.get()
             if 'do not crop' in old_text.lower():
-                out('already marked with DNC', color="white)
+                out('already marked with DNC', color="white")
                 continue
             end = findEndOfTemplate(old_text, "[Ss]pecimen")
             new_text = (old_text[:end]+  "\n{{Do not crop}}\n" + old_text[end:])
