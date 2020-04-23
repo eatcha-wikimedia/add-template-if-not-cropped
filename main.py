@@ -1,11 +1,12 @@
 import pywikibot
+import re
 from pywikibot import pagegenerators, logentries
 
 def commit(old_text, new_text, page, summary):
     """Show diff and submit text to page."""
     out("\nAbout to make changes at : '%s'" % page.title())
     pywikibot.showDiff(old_text, new_text)
-    page.put(new_text, summary=summary, watchArticle=True, minorEdit=False)
+    #page.put(new_text, summary=summary, watchArticle=True, minorEdit=False)
 
 def findEndOfTemplate(text, template):
     """Find end of any template, by Zitrax"""
@@ -49,15 +50,23 @@ def out(text, newline=True, date=False, color=None):
     )
     pywikibot.stdout("%s%s" % (dstr, text), newline=newline)
 
-add_template(cat):
+def add_template(cat):
     gen = pagegenerators.CategorizedPageGenerator(pywikibot.Category(SITE,cat))
-    end = findEndOfTemplate(old_text, "[Ss]pecimen")
+    
     summary = "Adding {{Do not crop}} template, requested by Pigsonthewing @ commons.wikimedia.org/w/index.php?title=Commons:Bots/Work_requests&oldid=414102776"
     for file in gen:
         file_name = file.title()
         if file_name.startswith("File:"):
             page = pywikibot.Page(SITE, file_name)
+            old_rev = page.oldest_revision
+            if 'crop' in (old_rev.comment).lower():
+                out('already cropped', color="white)
+                continue
             old_text = page.get()
+            if 'do not crop' in old_text.lower():
+                out('already marked with DNC', color="white)
+                continue
+            end = findEndOfTemplate(old_text, "[Ss]pecimen")
             new_text = (old_text[:end]+  "\n{{Do not crop}}\n" + old_text[end:])
             try:
                 commit(old_text, new_text, page, summary,)
